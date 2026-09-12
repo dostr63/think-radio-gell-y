@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0d" />
+  <meta name="description" content="DMX 512 p5.js Console — Enttec Open DMX" />
+  <title>DMX p5 Console</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+
+  <!-- p5.js loaded from CDN; also cached by service worker for offline use -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+
+  <style>
+    /* The only CSS we need: make the canvas fill the window cleanly */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #0a0a0d;   /* matches canvas bg so there's no flash */
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+    }
+    /* p5 puts a <canvas> inside the body — we just make sure it sits at 0,0 */
+    canvas { display: block; }
+
+    /* The port-picker dropdown is a native HTML element overlaid on the canvas.
+       Everything else is drawn by p5. This is a deliberate hybrid:
+       the browser's own <select> handles accessibility and the OS port list,
+       while p5 draws the surrounding UI. */
+    #portOverlay {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+      pointer-events: none; /* let clicks through to canvas by default */
+    }
+    #portSelect {
+      pointer-events: all;
+      background: #1c1c22;
+      color: #f0a000;
+      border: 1px solid #3a3a46;
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      outline: none;
+      min-width: 220px;
+    }
+    #portSelect:focus { border-color: #f0a000; }
+    .port-btn {
+      pointer-events: all;
+      background: transparent;
+      border: 1px solid #f0a000;
+      color: #f0a000;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .port-btn:hover { background: #f0a00022; }
+    .port-btn.red { border-color: #e83030; color: #e83030; }
+    .port-btn.red:hover { background: #e8303022; }
+    #btnDisconnect { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- Native HTML port selector overlaid on the p5 canvas -->
+<div id="portOverlay">
+  <select id="portSelect"><option value="">— select port —</option></select>
+  <button class="port-btn" id="btnScan">Scan</button>
+  <button class="port-btn red" id="btnDisconnect">Disconnect</button>
+</div>
+
+<script src="sketch.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW:', e));
+    });
+  }
+</script>
+</body>
+</html>

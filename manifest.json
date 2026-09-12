@@ -1,0 +1,13 @@
+{
+  "name": "DMX p5 Console",
+  "short_name": "DMX p5",
+  "description": "DMX 512 p5.js controller for Enttec Open DMX",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0d",
+  "theme_color": "#0a0a0d",
+  "orientation": "landscape-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
