@@ -37,12 +37,11 @@ const C = {
 // light uses. These are drawn as glowing circles. Change these
 // to whatever colours you like — this is the fun part!
 const GEL_COLOURS = [
-  [220,  60,  60],   // Ch 1 — red
-  [  0, 120, 255],   // Ch 2 — blue
-  [  0, 210, 100],   // Ch 3 — green
-  [200,  80, 220],   // Ch 4 — purple
+  [220,  40,  40],   // Ch 1 — Red
+  [  0, 160, 255],   // Ch 2 — Green (DMX RGBW order)
+  [ 40, 200,  60],   // Ch 3 — Blue
+  [255, 255, 220],   // Ch 4 — White
 ];
-
 // ── DMX state ────────────────────────────────────────────────
 // The DMX universe: 513 bytes. Index 0 unused, indices 1–512
 // are the 512 DMX channels. We only use channels 1–4 here,
@@ -339,11 +338,11 @@ function drawStrip(i) {
   // ── 2. Channel label & value ──────────────────────────────
   textAlign(CENTER, TOP);
 
+  const RGBW_LABELS = ['R', 'G', 'B', 'W'];
   fill(C.amber);
   textSize(11);
   textStyle(BOLD);
-  text('CH ' + ch.id, L.faderX, L.labelY);
-
+  text(RGBW_LABELS[i] + '  ·  CH ' + ch.id, L.faderX, L.labelY);
   // Value readout — glows amber when live, muted when zero
   const valBrightness = map(ch.value, 0, 255, 80, 255);
   fill(240, 160, 0, valBrightness);
