@@ -30,6 +30,7 @@ about DMX.
 computer via USB. The user must set the input selector on the STATION-X to
 **USB DATA IN**. Internally it uses an FTDI FT232 chip (USB VID 0x0403,
 PID 0x6001), which is why it appears in the browser's serial port picker.
+STATION-X uses USB-C with CC1/CC2 pull-up resistors. Power demand is ~50-100mA.
 
 **Z-RAY fixtures** — Think Radio's wireless DMX lighting units. Each Z-RAY has
 4 DMX channels in RGBW order:
@@ -41,26 +42,29 @@ PID 0x6001), which is why it appears in the browser's serial port picker.
 Z-RAYs have no power switch. They are either in DMX MODE (active) or STANDBY.
 To put a Z-RAY into DMX MODE on its default channel: press RESET, then RIGHT ARROW.
 
+All Z-RAY fixtures on their default DMX address respond together — GELL-Y
+currently controls all fixtures as a group.
+
 ---
 
 ## Codebase structure
 
 ```
-index.html   — Minimal HTML shell. Loads p5.js from CDN. Contains the port
-               selector <select> and Scan/Disconnect buttons as native HTML
-               elements overlaid on the p5 canvas via CSS. Also registers the
-               service worker.
+index.html    — Minimal HTML shell. Loads p5.js from CDN. Contains the port
+                selector <select> and Scan/Disconnect buttons as native HTML
+                elements overlaid on the p5 canvas via CSS. Also registers the
+                service worker.
 
-sketch.js    — Everything else. All p5.js drawing and all DMX logic lives here.
-               This is the primary file for development.
+sketch.js     — Everything else. All p5.js drawing and all DMX logic lives here.
+                This is the primary file for development.
 
-sw.js        — Service worker. Caches all app files (including p5.js from CDN)
-               on first load for offline use. Bump the CACHE version string
-               whenever app files change significantly.
+sw.js         — Service worker. Caches all app files (including p5.js from CDN)
+                on first load for offline use. Bump the CACHE version string
+                whenever app files change significantly.
 
 manifest.json — PWA manifest. Enables "Install app" in Chrome/Edge.
 
-icon.svg     — App icon.
+icon.svg      — App icon.
 
 jsconfig.json — Tells VS Code to provide p5.js type hints and autocomplete.
 ```
@@ -169,6 +173,36 @@ const GEL_COLOURS = [
   under evaluation. May exhibit sluggish DMX response — under investigation.
 - **Parallels VMs:** USB passthrough works but requires the full reboot after
   dialout group fix. Parallels keeps sessions partially alive across logout.
+
+---
+
+## Android support
+
+Standard Chrome on Android does not fully support Web Serial for wired USB
+connections. Chrome 148 (April 2026) added partial Web Serial support for
+Android, but USB serial is limited to a subset of devices and FTDI devices
+are not currently on the supported list.
+
+**WebSerial Browser app (workaround):**
+The open-source [WebSerial Browser](https://github.com/SchoepsLabs/webserial-android)
+app is an Android WebView that implements Web Serial and WebUSB on top of
+Android's USB Host API. It includes its own FTDI driver implementation.
+GELL-Y has been tested and confirmed working on a Nokia 9 PureView (Android 10,
+Chrome 148) using this app. Requires Android 7.0+, USB host support, and a
+USB-C OTG connection to STATION-X.
+
+**Important note on the FTDI driver in WebSerial Browser:**
+The app's FTDI driver is based on usb-serial-for-android but has not been
+verified on real FTDI hardware by the app's authors. GELL-Y's successful test
+on the Nokia 9 is therefore a useful real-world data point.
+
+**Native Chrome Android Web Serial:**
+As Chrome continues to expand its Android Web Serial support, it is worth
+periodically retesting whether GELL-Y works in plain Chrome on Android without
+the WebSerial Browser app. Chrome 148+ is the minimum version to test.
+
+**iOS/iPadOS:** No Web Serial support in any browser. Apple's browser engine
+restrictions mean this is unlikely to change.
 
 ---
 
